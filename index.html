@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Store Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pizza Store Management</h1>
+
+        <div>
+            <h2>Place an Order</h2>
+            <div class="form-group">
+                <label for="customer_id">Customer ID:</label>
+                <input type="text" id="customer_id">
+            </div>
+            <div class="form-group">
+                <label for="pizza_id">Pizza ID:</label>
+                <input type="text" id="pizza_id">
+            </div>
+            <div class="form-group">
+                <label for="topping_id">Topping ID:</label>
+                <input type="text" id="topping_id">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="text" id="quantity">
+            </div>
+            <button onclick="placeOrder()">Place Order</button>
+        </div>
+
+        <div>
+            <h2>Orders</h2>
+            <button onclick="getOrders()">Get All Orders</button>
+            <div id="orders_list"></div>
+        </div>
+    </div>
+
+    <script>
+        function placeOrder() {
+            const customer_id = document.getElementById('customer_id').value;
+            const pizza_id = document.getElementById('pizza_id').value;
+            const topping_id = document.getElementById('topping_id').value;
+            const quantity = document.getElementById('quantity').value;
+
+            fetch('/place_order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer_id: customer_id,
+                    total_price: 19.99,  // Example price
+                    order_items: [
+                        { pizza_id: pizza_id, topping_id: topping_id, quantity: quantity }
+                    ]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Order placed! Order ID: ' + data.order_id);
+            });
+        }
+
+        function getOrders() {
+            fetch('/get_orders')
+            .then(response => response.json())
+            .then(orders => {
+                const ordersList = document.getElementById('orders_list');
+                ordersList.innerHTML = '';
+                orders.forEach(order => {
+                    ordersList.innerHTML += `<p>Order ID: ${order.order_id}, Total: $${order.total_price}</p>`;
+                });
+            });
+        }
+    </script>
+</body>
+</html>
